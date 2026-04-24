@@ -1360,7 +1360,50 @@ function ConsultationForm() {
     return Object.keys(e).length === 0;
   };
 
-  const next = () => { if (validateStep()) { if (step < 2) setStep(s => s+1); else setDone(true); } };
+  const submit = async () => {
+    const text = [
+      `🚲 *Новая заявка Velochoice*`,
+      ``,
+      `*Имя:* ${data.name}`,
+      `*Город:* ${data.city}`,
+      data.age      ? `*Возраст:* ${data.age}` : '',
+      data.gender   ? `*Пол:* ${data.gender}` : '',
+      data.height   ? `*Рост:* ${data.height} см` : '',
+      data.inseam   ? `*Инсим:* ${data.inseam} см` : '',
+      data.weight   ? `*Вес:* ${data.weight} кг` : '',
+      data.health   ? `*Здоровье:* ${data.health}` : '',
+      ``,
+      `*Бюджет:* ${data.budget}`,
+      data.where.length ? `*Где ездить:* ${data.where.join(', ')}` : '',
+      data.frequency    ? `*Частота:* ${data.frequency}` : '',
+      data.experience   ? `*Опыт:* ${data.experience}` : '',
+      data.storage      ? `*Хранение:* ${data.storage}` : '',
+      data.newOrUsed    ? `*Новый/б.у.:* ${data.newOrUsed}` : '',
+      data.hasBike      ? `*Текущий велосипед:* ${data.hasBike}` : '',
+      ``,
+      `*Мессенджер:* ${data.messenger}`,
+      `*Контакт:* ${data.contact}`,
+      data.time    ? `*Удобное время:* ${data.time}` : '',
+      data.comment ? `*Комментарий:* ${data.comment}` : '',
+    ].filter(Boolean).join('\n');
+
+    await Promise.allSettled([
+      fetch('https://api.telegram.org/bot8756399755:AAGsMy3MhTVM3Urca08NI8NLVzieqrOPd18/sendMessage', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id: 722690800, text, parse_mode: 'Markdown' }),
+      }),
+      fetch('https://formspree.io/f/mwvaynvj', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      }),
+    ]);
+
+    setDone(true);
+  };
+
+  const next = () => { if (validateStep()) { if (step < 2) setStep(s => s+1); else submit(); } };
   const back = () => { setStep(s => s-1); setErrors({}); };
 
   const ref = React.useRef(); useReveal(ref);
