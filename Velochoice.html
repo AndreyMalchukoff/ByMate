@@ -1360,39 +1360,43 @@ function ConsultationForm() {
     return Object.keys(e).length === 0;
   };
 
+  const [sending, setSending] = React.useState(false);
+
   const submit = async () => {
+    setSending(true);
+    const line = (label, val) => val ? `${label}: ${val}` : '';
     const text = [
-      `🚲 *Новая заявка Velochoice*`,
+      `🚲 Новая заявка Velochoice`,
       ``,
-      `*Имя:* ${data.name}`,
-      `*Город:* ${data.city}`,
-      data.age      ? `*Возраст:* ${data.age}` : '',
-      data.gender   ? `*Пол:* ${data.gender}` : '',
-      data.height   ? `*Рост:* ${data.height} см` : '',
-      data.inseam   ? `*Инсим:* ${data.inseam} см` : '',
-      data.weight   ? `*Вес:* ${data.weight} кг` : '',
-      data.health   ? `*Здоровье:* ${data.health}` : '',
+      line('Имя', data.name),
+      line('Город', data.city),
+      line('Возраст', data.age),
+      line('Пол', data.gender),
+      line('Рост', data.height && data.height + ' см'),
+      line('Инсим', data.inseam && data.inseam + ' см'),
+      line('Вес', data.weight && data.weight + ' кг'),
+      line('Здоровье', data.health),
       ``,
-      `*Бюджет:* ${data.budget}`,
-      data.where.length ? `*Где ездить:* ${data.where.join(', ')}` : '',
-      data.frequency    ? `*Частота:* ${data.frequency}` : '',
-      data.experience   ? `*Опыт:* ${data.experience}` : '',
-      data.storage      ? `*Хранение:* ${data.storage}` : '',
-      data.newOrUsed    ? `*Новый/б.у.:* ${data.newOrUsed}` : '',
-      data.hasBike      ? `*Текущий велосипед:* ${data.hasBike}` : '',
+      line('Бюджет', data.budget),
+      line('Где ездить', data.where.join(', ')),
+      line('Частота', data.frequency),
+      line('Опыт', data.experience),
+      line('Хранение', data.storage),
+      line('Новый/б.у.', data.newOrUsed),
+      line('Текущий велосипед', data.hasBike),
       ``,
-      `*Мессенджер:* ${data.messenger}`,
-      `*Контакт:* ${data.contact}`,
-      data.time    ? `*Удобное время:* ${data.time}` : '',
-      data.comment ? `*Комментарий:* ${data.comment}` : '',
+      line('Мессенджер', data.messenger),
+      line('Контакт', data.contact),
+      line('Удобное время', data.time),
+      line('Комментарий', data.comment),
     ].filter(Boolean).join('\n');
 
-    await Promise.allSettled([
+    const results = await Promise.allSettled([
       fetch('https://api.telegram.org/bot8756399755:AAGsMy3MhTVM3Urca08NI8NLVzieqrOPd18/sendMessage', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ chat_id: 722690800, text, parse_mode: 'Markdown' }),
-      }),
+        body: JSON.stringify({ chat_id: 722690800, text }),
+      }).then(r => r.json()),
       fetch('https://formspree.io/f/mwvaynvj', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -1400,6 +1404,9 @@ function ConsultationForm() {
       }),
     ]);
 
+    console.log('Telegram:', results[0]);
+    console.log('Formspree:', results[1]);
+    setSending(false);
     setDone(true);
   };
 
@@ -1568,7 +1575,7 @@ function ConsultationForm() {
               : <span></span>
             }
             <button className="btn-form-next" onClick={next}>
-              {step < 2 ? 'Далее →' : 'Отправить заявку'}
+              {step < 2 ? 'Далее →' : sending ? 'Отправляем...' : 'Отправить заявку'}
             </button>
           </div>
         </div>
