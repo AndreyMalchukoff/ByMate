@@ -1333,7 +1333,7 @@ function ConsultationForm() {
   const [errors, setErrors] = React.useState({});
   const [data, setData] = React.useState({
     name:'', city:'', age:'', gender:'', height:'', inseam:'', weight:'', health:'',
-    budget:'', where:[], frequency:'', experience:'', storage:'', hasBike:'', newOrUsed:'',
+    budget:'', where:[], frequency:'', experience:'', storage:'', hasBike:'',
     messenger:'', contact:'', time:'', comment:'', consent: false
   });
 
@@ -1382,7 +1382,6 @@ function ConsultationForm() {
       line('Частота', data.frequency),
       line('Опыт', data.experience),
       line('Хранение', data.storage),
-      line('Новый/б.у.', data.newOrUsed),
       line('Текущий велосипед', data.hasBike),
       ``,
       line('Мессенджер', data.messenger),
@@ -1523,12 +1522,6 @@ function ConsultationForm() {
                   <select value={data.storage} onChange={e=>set('storage',e.target.value)}>
                     <option value="">Выберите</option>
                     {storageOptions.map(o=><option key={o}>{o}</option>)}
-                  </select>
-                </Field>
-                <Field label="Новый или б/у">
-                  <select value={data.newOrUsed} onChange={e=>set('newOrUsed',e.target.value)}>
-                    <option value="">Не важно</option>
-                    <option>Только новый</option>
                   </select>
                 </Field>
               </div>
