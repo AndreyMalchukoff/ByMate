@@ -1,0 +1,6 @@
+# Nested git repos — managed separately
+ByMate/
+claude-memory-compiler/
+
+# Claude Code local settings
+.claude/settings.local.json
